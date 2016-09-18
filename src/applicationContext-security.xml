@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
+	<!-- 开启默认的拦截器 -->
+	
+	<http access-denied-page="/403.jsp"><!-- auto-config='true'  -->
+		<intercept-url pattern="/**/*.ttf" filters="none" />
+		<intercept-url pattern="/**/*.woff" filters="none" />
+		<intercept-url pattern="/**/*.jpg" filters="none" />
+		<intercept-url pattern="/**/*.png" filters="none" />
+		<intercept-url pattern="/**/*.gif" filters="none" />
+		<intercept-url pattern="/**/*.ico" filters="none" />
+		<intercept-url pattern="/**/*.css" filters="none" />
+		<intercept-url pattern="/**/*.js" filters="none" />
+
+		<intercept-url pattern="/loginpage" access="IS_AUTHENTICATED_ANONYMOUSLY" /><!--允许匿名用户进入 -->
+		<intercept-url pattern="/logout.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/admin" access="IS_AUTHENTICATED_FULLY" />
+		<intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED" />
+		
+		
+		<!-- 
+			IS_AUTHENTICATED_FULLY 允许登录用户进入 --><!-- 
+			IS_AUTHENTICATED_REMEMBERED 允许登录用户和rememberMe用户进入 -->
+		 <remember-me key="elim" services-ref="rememberMeServices" /> 
+		
+		<form-login login-page="/loginpage" login-processing-url="/login"
+			authentication-failure-url="/loginpage?error=true"
+			default-target-url="/admin.jsp" authentication-success-handler-ref="MySuccessHandler"
+			authentication-failure-handler-ref="MyFailureHandler" />
+		<!-- session-management是针对session的管理. 这里可以不配置. 如有需求可以配置. -->
+		<!-- id登陆唯一. 后登陆的账号会挤掉第一次登陆的账号 error-if-maximum-exceeded="true" 禁止2次登陆; 
+			session-fixation-protection="none" 防止伪造sessionid攻击. 用户登录成功后会销毁用户当前的session. 
+			创建新的session,并把用户信息复制到新session中. -->
+		<session-management session-fixation-protection="none"><!-- 
+				当一个恶意攻击者可以创建一个session访问一个网站的时候，可以通过使用session-fixation-protection属性来配置它的行为,它有三个选项:migrateSession 
+				- 创建一个新session，把原来session中所有属性复制到新session中。这是默认值。none - 什么也不做，继续使用原来的session。newSession 
+				- 创建一个新的“干净的”session，不会复制session中的数据。 session-authentication-error-url="/login.jsp" 
+				invalid-session-url="/login.jsp" -->
+			<concurrency-control max-sessions="1"
+				expired-url="/logout.jsp" /><!--expired-url为session过期重定向地址 error-if-maximum-exceeded="true" -->
+		</session-management>
+		
+		<!-- logout-success-url:成功注销后跳转到的页面; -->
+		<logout invalidate-session="true" logout-success-url="/logout.jsp"
+			logout-url="/j_spring_security_logout"  />
+		<custom-filter ref="myFilter" before="FILTER_SECURITY_INTERCEPTOR" />
+
+	</http>
+	<beans:bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="url" value="jdbc:mysql://localhost:3306/xxd2" />
+		<beans:property name="username" value="root" />
+		<beans:property name="password" value="root" />
+	</beans:bean>
+	<beans:bean id="userDetailsService" class="com.stsoft.security.UserDetailService" />
+	<authentication-manager alias="authenticationManager"
+		erase-credentials="false">
+		<authentication-provider user-service-ref="userDetailsService" />
+		<!--  <authentication-provider ref="rememberMeAuthenticationProvider" /> -->
+		<!-- <authentication-provider ref="loginAuthenticationProvider" /> -->
+	</authentication-manager>
+	<!-- <beans:bean id="loginAuthenticationProvider" class="com.stsoft.security.LoginAuthenticationProvider"> 
+		<beans:property name="userDetailsService" ref="userDetailsService"></beans:property> 
+		<beans:property name="hideUserNotFoundExceptions" value="false"></beans:property> 
+		</beans:bean> -->
+	<beans:bean id="MySecurityMetadataSource" init-method="loadResourceDefine"
+		class="com.stsoft.security.InvocationSecurityMetadataSourceService" />
+	<beans:bean id="MyAccessDecisionManager" class="com.stsoft.security.AccessDecisionManager">
+	</beans:bean>
+	<beans:bean id="myFilter"
+		class="com.stsoft.security.FilterSecurityInterceptor">
+		<beans:property name="authenticationManager" ref="authenticationManager" />
+		<!-- 访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源 -->
+		<beans:property name="accessDecisionManager" ref="MyAccessDecisionManager" />
+		<beans:property name="securityMetadataSource" ref="MySecurityMetadataSource" />
+	</beans:bean>
+
+
+
+	<beans:bean id="MySuccessHandler" class="com.stsoft.controller.LoginSucessHandle" />
+	<beans:bean id="MyFailureHandler" class="com.stsoft.controller.LoginFailureHandle" />
+
+	<beans:bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<beans:property name="defaultEncoding" value="UTF-8" />
+		<beans:property name="basenames">
+			<beans:array>
+				<!-- 将自定义的放在Spring Security内置的之前。本版本security中已经有了中文的message_zh_CN.properties文件，但是在jar包中，不易于修改其中内容，故此处将其复制出来，就可以自己修改提示语了。 -->
+				<beans:value>classpath:com/stsoft/security/messages_zh_CN
+				</beans:value>
+				<beans:value>classpath:org/springframework/security/messages
+				</beans:value>
+			</beans:array>
+		</beans:property>
+	</beans:bean>
+
+
+
+
+
+	<!-- RememberMeServices的实现 -->
+	<beans:bean id="rememberMeServices"
+		class="org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices">
+		<beans:property name="userDetailsService" ref="userDetailsService" />
+		<beans:property name="key" value="elim" />
+		<!-- 指定request中包含的用户是否选择了记住我的参数名 -->
+		<beans:property name="parameter" value="_spring_security_remember_me" />
+		<!-- 指定PersistentTokenRepository -->
+		<beans:property name="tokenRepository" ref="tokenRepository" />
+			
+		
+	</beans:bean>
+	<beans:bean id="tokenRepository"
+				class="org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl">
+				<beans:property name="dataSource" ref="dataSource" />
+				<!-- 是否在系统启动时创建持久化token的数据库表 -->
+				<beans:property name="createTableOnStartup" value="false" />
+			</beans:bean>
+	<!-- key值需与对应的RememberMeServices保持一致 -->
+	<!-- <beans:bean id="rememberMeAuthenticationProvider"
+		class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
+		<beans:property name="key" value="elim" />
+	</beans:bean> 
+	 -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</beans:beans>
+
+
+
+
+	
+
+	
+
