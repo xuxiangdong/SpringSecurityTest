@@ -49,7 +49,7 @@ public class UserDetailService implements UserDetailsService
         }
         
         // 如果用户名和密码正确，那么就找出当前用户的所有权限（包括用户绑定的权限，用户组的权限，用户角色的权限等等）
-        HashMap<String, Object> currentAllResource = userService.searchAllAuthroityByUser(username);
+        HashMap<String, Object> currentAllResource = userService.searchAllAuthorityByUser(username);
         for (Map.Entry<String, Object> resource : currentAllResource.entrySet())
         {
             GrantedAuthorityImpl grantedAuthorityImpl = new GrantedAuthorityImpl(resource.getKey().toString());

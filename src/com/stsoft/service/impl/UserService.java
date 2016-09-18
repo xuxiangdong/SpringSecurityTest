@@ -160,12 +160,12 @@ public class UserService implements IUserService
      * @see [类、类#方法、类#成员]
      */
     @Override
-    public HashMap<String, Object> searchAllAuthroityByUser(String username)
+    public HashMap<String, Object> searchAllAuthorityByUser(String username)
     {
         HashMap<String, Object> all = new HashMap<String, Object>();
-        // List<Map<String, Object>> userAllAuthroity = jdbcTemplate.queryForList(sql, username, username);
-        List<Map<String, Object>> userAllAuthroity = userDao.searchAllAuthroityByUser(username);
-        for (Map<String, Object> map : userAllAuthroity)
+        // List<Map<String, Object>> userAllAuthority = jdbcTemplate.queryForList(sql, username, username);
+        List<Map<String, Object>> userAllAuthority = userDao.searchAllAuthorityByUser(username);
+        for (Map<String, Object> map : userAllAuthority)
         {
             all.put(map.get("id").toString(), map.get("action"));
         }

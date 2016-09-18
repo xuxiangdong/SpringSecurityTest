@@ -90,14 +90,14 @@
 			#{idItem.id}
 		</foreach>
 	</delete>
-	<select id="searchAllAuthroityByUser" parameterType="java.lang.String"
+	<select id="searchAllAuthorityByUser" parameterType="java.lang.String"
 		resultType="java.util.HashMap">
 		SELECT DISTINCT
 		e.id,e.action from t_sys_user_role a LEFT
 		JOIN t_sys_role b on
 		a.roleid = b.id LEFT JOIN user c on a.userid =
 		c.id LEFT JOIN
-		t_sys_role_authroity d on b.id = d.roleid LEFT JOIN
+		t_sys_role_authority d on b.id = d.roleid LEFT JOIN
 		t_sys_authority e
 		on d.authorityid = e.id WHERE
 		c.username=#{username,jdbcType=VARCHAR}

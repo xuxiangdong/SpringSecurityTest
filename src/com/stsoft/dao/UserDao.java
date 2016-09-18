@@ -27,7 +27,7 @@ public interface UserDao
     
     void deleteUserByUserId(ArrayList<HashMap<String, Object>> users);
     
-    public List<Map<String, Object>> searchAllAuthroityByUser(String username);
+    public List<Map<String, Object>> searchAllAuthorityByUser(String username);
     
     public List<Map<String, Object>> selectAllAuthority();
     
