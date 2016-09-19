@@ -1,0 +1,49 @@
+--备份目标数据库（用户名：UQSM   密码：UQSMPWD  实例名：njoracle   注意：对于备份文件存放的位置，当前用户必须有写权限）
+exp UQSM/UQSMPWD@njoracle file=/home/oracle/uqsm.dmp
+
+
+--用dba用户登录(用户名：sys    密码：oracle    实例名：njoracle)
+sqlplus sys/oracle@njoracle as sysdba
+--注意：下面操作需要在超级用户下进行，否者可能会出现问题
+--查看现有表空间信息
+SELECT TABLESPACE_NAME,FILE_ID,FILE_NAME,round(bytes/(1024*1024),0) total_space FROM DBA_DATA_FILES ORDER BY TABLESPACE_NAME
+
+--创建临时表空间
+CREATE TEMPORARY TABLESPACE UQSM_TEMP 
+TEMPFILE '/oracle/oradata/njoracle/uqsm_temp.dbf' 
+size 8000m 
+autoextend on 
+next 50m maxsize unlimited 
+extent management local;
+
+
+--创建数据表空间
+CREATE TABLESPACE UQSM_DATA 
+LOGGING 
+DATAFILE '/oracle/oradata/njoracle/uqsm_data.dbf' 
+SIZE 8000m 
+autoextend on 
+next 50M maxsize unlimited 
+extent management local;
+
+
+--创建用户并指定表空间
+CREATE USER xxd IDENTIFIED BY pwd 
+DEFAULT TABLESPACE UQSM_DATA 
+TEMPORARY TABLESPACE UQSM_TEMP;
+
+--给用户授予权限
+GRANT connect,RESOURCE,dba to UQSM;
+
+
+--修改创建的用户的密码
+ALTER USER UQSM IDENTIFIED BY UQSMPWD;
+
+
+
+--退出dba用户，用新建用户导入第一步备份的dmp文件
+imp 新建的用户名/新建的用户的密码@实例名 file=/home/oracle/uqsm.dmp
+
+
+
+
