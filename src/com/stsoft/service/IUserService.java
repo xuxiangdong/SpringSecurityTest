@@ -31,7 +31,7 @@ public interface IUserService
     
     User search(String username);
     
-    HashMap<String, Object> searchAllAuthorityByUser(String username);
+    HashMap<String, Object> searchAllAuthroityByUser(String username);
     
     HashMap<String, String> getSystemAllResource();
     
