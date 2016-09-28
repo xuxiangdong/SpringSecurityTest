@@ -155,4 +155,10 @@ public class AdminManagerServiceImpl implements IAdminManagerService
     {
         adminManagerDao.addUsersAuthoritys(datas);
     }
+
+    @Override
+    public void deleteUsersAuthoritys(List<HashMap<String, Object>> datas)
+    {
+        adminManagerDao.deleteUsersAuthoritys(datas);
+    }
 }

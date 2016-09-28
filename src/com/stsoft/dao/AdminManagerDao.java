@@ -20,4 +20,5 @@ public interface AdminManagerDao
     
     public void addUsersAuthoritys(List<HashMap<String,Object>> datas);
     
+    public void deleteUsersAuthoritys(List<HashMap<String,Object>> datas);
 }

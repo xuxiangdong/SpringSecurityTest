@@ -84,10 +84,17 @@
 		insert into t_sys_user_authority (userid,
 		authorityid)
 		values 
-		<foreach collection="list" item="item" index="index" separator=",">
-		
-		(#{item.userid,jdbcType=VARCHAR},
-		#{item.authorityid,jdbcType=VARCHAR})
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item.userid,jdbcType=VARCHAR},
+			#{item.authorityid,jdbcType=VARCHAR}
 		</foreach>
 	</insert>
+	<delete id="deleteUsersAuthoritys" parameterType="java.util.List">
+	    delete from t_sys_user_authority where 
+	    <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+	        userid = #{item.userid,jdbcType=VARCHAR}
+	        and 
+			authorityid = #{item.authorityid,jdbcType=VARCHAR}
+		</foreach>
+	</delete>
 </mapper>

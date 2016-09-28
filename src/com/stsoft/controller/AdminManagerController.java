@@ -153,9 +153,8 @@ public class AdminManagerController
     
     @RequestMapping(value = "/getAllUsers", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public Object getAllUsers(@RequestParam(required = false) Map param, @RequestParam(required = false) int limit,
-        @RequestParam(required = false) int offset, @RequestParam(required = false) String username,
-        HttpServletRequest request, HttpServletResponse response)
+    public Object getAllUsers(@RequestParam(required = false) Map param, @RequestParam(required = false) int limit, @RequestParam(required = false) int offset,
+        @RequestParam(required = false) String username, HttpServletRequest request, HttpServletResponse response)
     {
         PageHelper.startPage(offset, limit);
         List<HashMap<String, Object>> allUsers = adminManagerService.getAllUserAndAuthorityInfos();
@@ -193,22 +192,19 @@ public class AdminManagerController
     public Object asyncAuthority(@RequestBody List params, HttpServletRequest request, HttpServletResponse response)
     {
         List<Map> p = (List<Map>)params;
-        List<HashMap<String,Object>> datas = new ArrayList<HashMap<String,Object>>();
+        List<HashMap<String, Object>> datas = new ArrayList<HashMap<String, Object>>();
         for (Map map : p)
         {
             Map user = (Map)map.get("user");
             List<Map> menus = (List<Map>)map.get("menus");
             for (Map map2 : menus)
             {
-                HashMap data = new HashMap<String,Object>();
+                HashMap data = new HashMap<String, Object>();
                 data.put("userid", user.get("id"));
                 data.put("authorityid", map2.get("authorityid"));
                 datas.add(data);
             }
         }
-        
-        
-        
         
         Map<String, Object> result = new HashMap<String, Object>();
         try
@@ -221,6 +217,39 @@ public class AdminManagerController
         {
             logger.error(e);
             result.put("message", "添加角色信息失败！");
+            result.put("success", "false");
+        }
+        return result;
+    }
+    
+    @RequestMapping(value = "/deleteUsersAuthority", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public Object deleteUsersAuthority(@RequestBody List params, HttpServletRequest request, HttpServletResponse response)
+    {
+        List<Map> p = (List<Map>)params;
+        List<HashMap<String, Object>> datas = new ArrayList<HashMap<String, Object>>();
+        for (Map map : p)
+        {
+            List<Map> menus = (List<Map>)map.get("menus");
+            for (Map map2 : menus)
+            {
+                HashMap data = new HashMap<String, Object>();
+                data.put("userid", map.get("id"));
+                data.put("authorityid", map2.get("authorityid"));
+                datas.add(data);
+            }
+        }
+        Map<String, Object> result = new HashMap<String, Object>();
+        try
+        {
+            adminManagerService.deleteUsersAuthoritys(datas);
+            result.put("message", "删除用户权限信息成功！");
+            result.put("success", "true");
+        }
+        catch (Exception e)
+        {
+            logger.error(e);
+            result.put("message", "删除用户权限信息失败！");
             result.put("success", "false");
         }
         return result;

@@ -53,7 +53,7 @@ admin-title
             <div class="panel-heading">
 				<button type="button" class="btn btn-sm btn-primary" data-loading-text="执行中..." onclick="syn_to_users(this);">同步权限到用户</button>
 				<button type="button" class="btn btn-sm btn-primary" data-loading-text="执行中..." onclick="syn_to_roles(this);">同步权限到角色</button>
-				<button type="button" class="btn btn-sm btn-primary" data-loading-text="执行中..." onclick="">删除用户的权限</button>
+				<button type="button" class="btn btn-sm btn-primary" data-loading-text="执行中..." onclick="delete_to_users(this);">删除用户的权限</button>
 				<button type="button" class="btn btn-sm btn-primary" data-loading-text="执行中..." onclick="">删除角色的权限</button>
               <!--<span class="panel-title">Panel title</span>-->
               	<div class="dropdown rightBtn">

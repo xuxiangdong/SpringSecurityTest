@@ -36,8 +36,8 @@ $(function() {
 				enable : true,
 				chkStyle : "checkbox",
 				chkboxType : {
-					"Y" : "ps",
-					"N" : "ps"
+					"Y" : "",
+					"N" : ""
 				}
 			},
 			callback : {
@@ -363,4 +363,50 @@ function syn_to_roles(_this) {
 		alert("请至少选择一个资源！");
 		return;
 	}
+}
+function delete_to_users(_this) {
+	$(_this).button('loading');
+	// 获取用户表格中选中的数据
+	var users = $("#menumanager_users_tb").bootstrapTable("getSelections");
+	// 获取资源（菜单）树种选中的数据
+	var nodes = $.fn.zTree.getZTreeObj("menumanager_tree_id").getCheckedNodes(true);
+	if(users.length==0)
+	{
+		$(_this).button('reset');
+		alert("请至少选择一个用户！");
+		return;
+	}
+	if(nodes.length==0)
+	{
+		$(_this).button('reset');
+		alert("请至少选择一个资源！");
+		return;
+	}
+	var params = [];
+	for(var j=0;j<users.length;j++)
+	{
+		users[j].menus = nodes;
+	}
+	$.ajax({
+		type:'POST',
+		dataType:"text",
+		contentType:'application/json;charset=GBK',
+		url : path+'/adminManager/deleteUsersAuthority',
+		data:JSON.stringify(users),
+		success:function(result)
+		{
+			if(result.success=='true')
+			{
+			}
+			alert(result.message);
+		},
+		error:function(result)
+		{
+			alert(result.message);
+		},
+		complete:function(XMLHttpRequest,status)
+		{
+			$(_this).button('reset');
+		}
+	});
 }
